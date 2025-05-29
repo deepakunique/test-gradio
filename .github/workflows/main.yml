@@ -1,0 +1,34 @@
+name: Deploy Gradio App
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.10'
+
+    - name: Install dependencies
+      run: |
+        pip install -r requirements.txt
+
+    - name: Deploy to Hugging Face
+      env:
+        HF_TOKEN: ${{ secrets.HF_TOKEN }}
+      run: |
+        git config --global user.email "deepakunique@gmail.com"
+        git config --global user.name "DeepakGoyal11"
+        git clone https://DeepakGoyal:${HF_TOKEN}@huggingface.co/spaces/DeepakGoyal11/gradio-test-ci-cd
+        cp app.py requirements.txt gradio-test-ci-cd/
+        cd gradio-test-ci-cd
+        git add .
+        git commit -m "Auto deploy"
+        git push https://DeepakGoyal:${HF_TOKEN}@huggingface.co/spaces/DeepakGoyal11/gradio-test-ci-cd
